@@ -10,6 +10,9 @@ def get_annex_class(storage):
     if storage == 'file':
         from .file import FileAnnex
         return FileAnnex
+    elif storage == 's3':
+        from .s3 import S3Annex
+        return S3Annex
     else:
         raise ValueError("unsupported storage {}".format(storage))
 
