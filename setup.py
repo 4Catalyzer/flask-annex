@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="Flask-Annex",
-    version='0.0.0',
+    version='0.0.1',
     packages=('flask_annex',),
     install_requires=(
         'Flask',
