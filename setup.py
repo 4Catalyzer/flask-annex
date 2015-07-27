@@ -7,5 +7,8 @@ setup(
     install_requires=(
         'Flask',
         'six'
-    )
+    ),
+    extras_require={
+        's3': ('boto',)
+    }
 )
