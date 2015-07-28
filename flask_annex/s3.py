@@ -38,9 +38,7 @@ class S3Annex(AnnexBase):
         s3_key.get_contents_to_filename(out_filename)
 
     def list_keys(self, prefix):
-        keys = tuple(s3_key.name for s3_key in self._bucket.list(prefix))
-        print 'keys', keys
-        return keys
+        return tuple(s3_key.name for s3_key in self._bucket.list(prefix))
 
     def save_file(self, key, filename):
         s3_key = self._get_s3_key(key)
