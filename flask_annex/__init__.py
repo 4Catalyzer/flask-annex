@@ -20,7 +20,9 @@ def get_annex_class(storage):
 # -----------------------------------------------------------------------------
 
 
-class Annex(AnnexBase):
+# We can't use the base class here, as this does not explicitly implement the
+# abstract methods.
+class Annex(object):
     def __init__(self, storage, **kwargs):
         annex_class = get_annex_class(storage)
 
@@ -39,8 +41,9 @@ class Annex(AnnexBase):
 
         return cls(storage, **storage_config)
 
-    def save_file(self, key, filename):
-        return self._impl.save_file(key, filename)
-
-    def send_file(self, key, **options):
-        return self._impl.send_file(key, **options)
+    def __getattr__(self, item):
+        # Only expose explicitly available abstract annex methods.
+        if item in AnnexBase.__abstractmethods__:
+            return getattr(self._impl, item)
+        else:
+            raise AttributeError
