@@ -1,3 +1,4 @@
+import errno
 import flask
 import glob
 import os
@@ -54,8 +55,11 @@ class FileAnnex(AnnexBase):
         key_dir_name = os.path.dirname(key)
         if key_dir_name:
             dir_name = self._get_filename(key_dir_name)
-            if not os.path.exists(dir_name):
+            try:
                 os.makedirs(dir_name)
+            except OSError as e:
+                if e.errno != errno.EEXIST:
+                    raise
 
         shutil.copyfile(in_filename, out_filename)
 
