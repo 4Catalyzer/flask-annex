@@ -20,7 +20,7 @@ class AnnexBase(with_metaclass(ABCMeta, object)):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_file(self, key, out_filename):
+    def get_file(self, key, out_file):
         raise NotImplementedError()
 
     @abstractmethod
@@ -28,7 +28,7 @@ class AnnexBase(with_metaclass(ABCMeta, object)):
         raise NotImplementedError()
 
     @abstractmethod
-    def save_file(self, key, filename):
+    def save_file(self, key, in_file):
         raise NotImplementedError()
 
     @abstractmethod

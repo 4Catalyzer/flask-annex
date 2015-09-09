@@ -3,6 +3,7 @@ import flask
 import glob
 import os
 import shutil
+from six import string_types
 
 from .base import AnnexBase
 
@@ -35,9 +36,14 @@ class FileAnnex(AnnexBase):
         for key in keys:
             self.delete(key)
 
-    def get_file(self, key, out_filename):
+    def get_file(self, key, out_file):
         in_filename = self._get_filename(key)
-        shutil.copyfile(in_filename, out_filename)
+
+        if isinstance(out_file, string_types):
+            shutil.copyfile(in_filename, out_file)
+        else:
+            with open(in_filename, 'rb') as in_fp:
+                shutil.copyfileobj(in_fp, out_file)
 
     def list_keys(self, prefix):
         pattern = self._get_filename('{}*'.format(prefix))
@@ -48,7 +54,7 @@ class FileAnnex(AnnexBase):
             for filename in filenames
         ]
 
-    def save_file(self, key, in_filename):
+    def save_file(self, key, in_file):
         out_filename = self._get_filename(key)
 
         # Create directory for file if needed.
@@ -61,7 +67,11 @@ class FileAnnex(AnnexBase):
                 if e.errno != errno.EEXIST:
                     raise
 
-        shutil.copyfile(in_filename, out_filename)
+        if isinstance(in_file, string_types):
+            shutil.copyfile(in_file, out_filename)
+        else:
+            with open(out_filename, 'wb') as out_fp:
+                shutil.copyfileobj(in_file, out_fp)
 
     def send_file(self, key, **options):
         return flask.send_from_directory(self._root_path, key, **options)
