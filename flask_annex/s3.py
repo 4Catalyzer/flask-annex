@@ -1,6 +1,7 @@
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 import flask
+from six import string_types
 
 from .base import AnnexBase
 
@@ -33,16 +34,24 @@ class S3Annex(AnnexBase):
     def delete_many(self, keys):
         self._bucket.delete_keys(keys)
 
-    def get_file(self, key, out_filename):
+    def get_file(self, key, out_file):
         s3_key = self._get_s3_key(key)
-        s3_key.get_contents_to_filename(out_filename)
+
+        if isinstance(out_file, string_types):
+            s3_key.get_contents_to_filename(out_file)
+        else:
+            s3_key.get_contents_to_file(out_file)
 
     def list_keys(self, prefix):
         return tuple(s3_key.name for s3_key in self._bucket.list(prefix))
 
-    def save_file(self, key, filename):
+    def save_file(self, key, in_file):
         s3_key = self._get_s3_key(key)
-        s3_key.set_contents_from_filename(filename)
+
+        if isinstance(in_file, string_types):
+            s3_key.set_contents_from_filename(in_file)
+        else:
+            s3_key.set_contents_from_file(in_file)
 
     def send_file(self, key, **options):
         s3_key = self._get_s3_key(key)
