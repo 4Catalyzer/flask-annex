@@ -32,5 +32,5 @@ class AnnexBase(with_metaclass(ABCMeta, object)):
         raise NotImplementedError()
 
     @abstractmethod
-    def send_file(self, key, **options):
+    def send_file(self, key):
         raise NotImplementedError()

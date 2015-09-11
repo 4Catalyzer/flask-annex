@@ -73,5 +73,9 @@ class FileAnnex(AnnexBase):
             with open(out_filename, 'wb') as out_fp:
                 shutil.copyfileobj(in_file, out_fp)
 
-    def send_file(self, key, **options):
-        return flask.send_from_directory(self._root_path, key, **options)
+    def send_file(self, key):
+        return flask.send_from_directory(
+            self._root_path, key,
+            as_attachment=True,
+            attachment_filename=os.path.basename(key)
+        )
