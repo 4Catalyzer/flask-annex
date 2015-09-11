@@ -2,6 +2,7 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 import flask
 from six import string_types
+from werkzeug.datastructures import FileStorage
 
 from .base import AnnexBase
 
@@ -51,8 +52,15 @@ class S3Annex(AnnexBase):
         if isinstance(in_file, string_types):
             s3_key.set_contents_from_filename(in_file)
         else:
+            if isinstance(in_file, FileStorage):
+                # Use filename for type inference instead of form name.
+                s3_key.path = in_file.filename
+                in_file = in_file.stream
+            else:
+                # Use key as fallback for guessing file type.
+                s3_key.path = key
             s3_key.set_contents_from_file(in_file)
 
-    def send_file(self, key, **options):
+    def send_file(self, key):
         s3_key = self._get_s3_key(key)
         return flask.redirect(s3_key.generate_url(self._url_expires_in))
