@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="Flask-Annex",
-    version='0.0.7',
+    version='0.0.8',
     description="Efficient integration of external storage services for Flask",
     url='https://github.com/4Catalyzer/flask-annex',
     author="Jimmy Jia",
