@@ -1,8 +1,8 @@
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 import flask
+import mimetypes
 from six import string_types
-from werkzeug.datastructures import FileStorage
 
 from .base import AnnexBase
 
@@ -49,17 +49,18 @@ class S3Annex(AnnexBase):
     def save_file(self, key, in_file):
         s3_key = self._get_s3_key(key)
 
-        if isinstance(in_file, string_types):
-            s3_key.set_contents_from_filename(in_file)
+        # Get the content type from the key, rather than letting Boto try to
+        # figure it out from the file's name, which may be uninformative.
+        content_type = mimetypes.guess_type(key)[0]
+        if content_type:
+            headers = {'Content-Type': content_type}
         else:
-            if isinstance(in_file, FileStorage):
-                # Use filename for type inference instead of form name.
-                s3_key.path = in_file.filename
-                in_file = in_file.stream
-            else:
-                # Use key as fallback for guessing file type.
-                s3_key.path = key
-            s3_key.set_contents_from_file(in_file)
+            headers = None
+
+        if isinstance(in_file, string_types):
+            s3_key.set_contents_from_filename(in_file, headers=headers)
+        else:
+            s3_key.set_contents_from_file(in_file, headers=headers)
 
     def send_file(self, key):
         s3_key = self._get_s3_key(key)
