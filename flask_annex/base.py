@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
-from six import with_metaclass
 
+from .compat import with_metaclass
 from . import utils
 
 # -----------------------------------------------------------------------------

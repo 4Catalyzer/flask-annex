@@ -1,4 +1,6 @@
-# flask-annex 
-Efficient integration of external storage services for Flask.
+# Flask-Annex [![PyPI][pypi-badge]][pypi]
+Efficient integration of external storage services for
+[Flask](http://flask.pocoo.org/).
 
-[![PyPI version](https://badge.fury.io/py/Flask-Annex.svg)](http://badge.fury.io/py/Flask-Annex)
+[pypi-badge]: https://img.shields.io/pypi/v/Flask-Annex.svg
+[pypi]: https://pypi.python.org/pypi/Flask-Annex

@@ -3,11 +3,9 @@ import flask
 import glob
 import os
 import shutil
-from six import string_types
 
 from .base import AnnexBase
-
-__all__ = ('FileAnnex',)
+from .compat import string_types
 
 # -----------------------------------------------------------------------------
 
@@ -77,5 +75,5 @@ class FileAnnex(AnnexBase):
         return flask.send_from_directory(
             self._root_path, key,
             as_attachment=True,
-            attachment_filename=os.path.basename(key)
+            attachment_filename=os.path.basename(key),
         )

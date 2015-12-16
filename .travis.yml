@@ -1,0 +1,28 @@
+sudo: false
+
+language: python
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "pypy"
+
+env:
+  - TOXENV=py-base
+  - TOXENV=py-s3
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+before_install:
+  - pip install -U pip
+install:
+  - pip install -U tox
+
+script:
+  - python setup.py test
+
+branches:
+  only:
+    - master
