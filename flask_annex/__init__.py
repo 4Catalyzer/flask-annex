@@ -1,8 +1,6 @@
 from .base import AnnexBase
 from . import utils
 
-__all__ = ('Annex',)
-
 # -----------------------------------------------------------------------------
 
 
