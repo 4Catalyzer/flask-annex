@@ -15,7 +15,7 @@ DEFAULT_URL_EXPIRES_IN = 300
 
 class S3Annex(AnnexBase):
     def __init__(
-            self, access_key_id, secret_access_key, bucket_name,
+            self, bucket_name, access_key_id=None, secret_access_key=None,
             url_expires_in=DEFAULT_URL_EXPIRES_IN):
         self._connection = S3Connection(access_key_id, secret_access_key)
         self._bucket = self._connection.get_bucket(
