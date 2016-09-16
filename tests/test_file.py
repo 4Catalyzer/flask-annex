@@ -11,7 +11,7 @@ from helpers import AbstractTestAnnex, assert_key_value
 
 @pytest.fixture
 def file_annex_path(tmpdir):
-    return tmpdir.join('annex').strpath
+    return tmpdir.join('annex').mkdir().strpath
 
 
 # -----------------------------------------------------------------------------
@@ -41,3 +41,11 @@ class TestFileAnnexFromEnv(TestFileAnnex):
         monkeypatch.setenv('FLASK_ANNEX_FILE_ROOT_PATH', file_annex_path)
 
         return Annex.from_env('FLASK_ANNEX')
+
+
+# -----------------------------------------------------------------------------
+
+
+def test_error_nonexistent_root_path():
+    with pytest.raises(IOError):
+        Annex('file', root_path='/dummy')

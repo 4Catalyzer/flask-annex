@@ -13,6 +13,9 @@ from .compat import string_types
 
 class FileAnnex(AnnexBase):
     def __init__(self, root_path):
+        if not os.path.exists(root_path):
+            raise IOError("root path {} does not exist".format(root_path))
+
         self._root_path = root_path
 
     def _get_filename(self, key):
