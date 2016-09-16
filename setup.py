@@ -48,7 +48,7 @@ setup(
         'Flask >= 0.10',
     ),
     extras_require={
-        's3': ('boto >= 2.38.0',),
+        's3': ('boto3 >= 1.4.0',),
     },
     cmdclass={
         'clean': system('rm -rf build dist *.egg-info'),

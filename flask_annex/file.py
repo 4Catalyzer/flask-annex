@@ -1,8 +1,9 @@
 import errno
-import flask
 import glob
 import os
 import shutil
+
+import flask
 
 from .base import AnnexBase
 from .compat import string_types
@@ -62,7 +63,7 @@ class FileAnnex(AnnexBase):
             try:
                 os.makedirs(dir_name)
             except OSError as e:
-                if e.errno != errno.EEXIST:
+                if e.errno != errno.EEXIST:  # pragma: no cover
                     raise
 
         if isinstance(in_file, string_types):

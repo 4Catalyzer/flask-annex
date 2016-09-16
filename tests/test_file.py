@@ -1,0 +1,43 @@
+from io import BytesIO
+
+import pytest
+
+from flask_annex import Annex
+
+from helpers import AbstractTestAnnex, assert_key_value
+
+# -----------------------------------------------------------------------------
+
+
+@pytest.fixture
+def file_annex_path(tmpdir):
+    return tmpdir.join('annex').strpath
+
+
+# -----------------------------------------------------------------------------
+
+
+class TestFileAnnex(AbstractTestAnnex):
+    @pytest.fixture
+    def annex_base(self, file_annex_path):
+        return Annex('file', root_path=file_annex_path)
+
+    def test_save_file_existing_dir(self, annex):
+        annex.save_file('foo/qux.txt', BytesIO(b'6\n'))
+        assert_key_value(annex, 'foo/qux.txt', b'6\n')
+
+    def test_send_file(self, app, annex):
+        with app.test_request_context():
+            response = annex.send_file('foo/baz.json')
+
+        assert response.status_code == 200
+        assert response.mimetype == 'application/json'
+
+
+class TestFileAnnexFromEnv(TestFileAnnex):
+    @pytest.fixture
+    def annex_base(self, monkeypatch, file_annex_path):
+        monkeypatch.setenv('FLASK_ANNEX_STORAGE', 'file')
+        monkeypatch.setenv('FLASK_ANNEX_FILE_ROOT_PATH', file_annex_path)
+
+        return Annex.from_env('FLASK_ANNEX')
