@@ -32,7 +32,7 @@ def bucket_name():
 class TestS3Annex(AbstractTestAnnex):
     @pytest.fixture
     def annex_base(self, bucket_name):
-        return Annex('s3', bucket_name=bucket_name)
+        return Annex('s3', bucket_name)
 
     def test_save_file_unknown_type(self, annex):
         annex.save_file('foo/qux', BytesIO(b'6\n'))

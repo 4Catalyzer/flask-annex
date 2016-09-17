@@ -20,9 +20,9 @@ def get_annex_class(storage):
 # We don't use the base class here, as this is just a convenience thing rather
 # than an actual annex class.
 class Annex(object):
-    def __new__(cls, storage, **kwargs):
+    def __new__(cls, storage, *args, **kwargs):
         annex_class = get_annex_class(storage)
-        return annex_class(**kwargs)
+        return annex_class(*args, **kwargs)
 
     @staticmethod
     def from_env(namespace):
