@@ -48,4 +48,5 @@ class TestFileAnnexFromEnv(TestFileAnnex):
 
 def test_error_nonexistent_root_path(tmpdir):
     with pytest.raises(IOError):
-        Annex('file', tmpdir.join('nonexistent').strpath)
+        annex = Annex('file', tmpdir.join('dummy').strpath)
+        annex.save_file('foo', BytesIO(b''))
