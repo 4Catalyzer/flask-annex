@@ -20,7 +20,7 @@ def file_annex_path(tmpdir):
 class TestFileAnnex(AbstractTestAnnex):
     @pytest.fixture
     def annex_base(self, file_annex_path):
-        return Annex('file', root_path=file_annex_path)
+        return Annex('file', file_annex_path)
 
     def test_save_file_existing_dir(self, annex):
         annex.save_file('foo/qux.txt', BytesIO(b'6\n'))
@@ -46,6 +46,6 @@ class TestFileAnnexFromEnv(TestFileAnnex):
 # -----------------------------------------------------------------------------
 
 
-def test_error_nonexistent_root_path():
+def test_error_nonexistent_root_path(tmpdir):
     with pytest.raises(IOError):
-        Annex('file', root_path='/dummy')
+        Annex('file', tmpdir.join('nonexistent').strpath)
