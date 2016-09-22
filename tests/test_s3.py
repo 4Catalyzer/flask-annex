@@ -1,4 +1,6 @@
+import base64
 from io import BytesIO
+import json
 
 import pytest
 
@@ -26,6 +28,26 @@ def bucket_name():
         yield bucket.name
 
 
+def get_policy(upload_info):
+    return json.loads(
+        base64.urlsafe_b64decode(
+            upload_info['data']['policy'].encode(),
+        ).decode(),
+    )
+
+
+def get_condition(conditions, key):
+    for condition in conditions:
+        if isinstance(condition, list):
+            if condition[0] == key:
+                return condition[1:]
+        else:
+            if key in condition:
+                return condition[key]
+
+    raise KeyError()
+
+
 # -----------------------------------------------------------------------------
 
 
@@ -43,6 +65,28 @@ class TestS3Annex(AbstractTestAnnex):
             response = annex.send_file('foo/baz.json')
 
         assert response.status_code == 302
+
+    def test_get_upload_info(self, app, annex):
+        with app.app_context():
+            upload_info = annex.get_upload_info('foo/qux.txt')
+            assert upload_info['method'] == 'POST'
+            assert upload_info['url'] == \
+                'https://flask-annex.s3.amazonaws.com/'
+            assert upload_info['data']['key'] == 'foo/qux.txt'
+            assert upload_info['data']['Content-Type'] == 'text/plain'
+
+            conditions = get_policy(upload_info)['conditions']
+            assert get_condition(conditions, 'bucket') == 'flask-annex'
+            assert get_condition(conditions, 'key') == 'foo/qux.txt'
+            assert get_condition(conditions, 'Content-Type') == 'text/plain'
+
+    def test_get_upload_info_max_content_length(self, app, annex):
+        app.config['MAX_CONTENT_LENGTH'] = 100
+
+        with app.app_context():
+            upload_info = annex.get_upload_info('foo/qux.txt')
+            conditions = get_policy(upload_info)['conditions']
+            assert get_condition(conditions, 'content-length-range')[1] == 100
 
 
 class TestS3AnnexFromEnv(TestS3Annex):

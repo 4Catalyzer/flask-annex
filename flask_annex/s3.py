@@ -82,5 +82,38 @@ class S3Annex(AnnexBase):
                 'Bucket': self._bucket_name,
                 'Key': key,
             },
+            ExpiresIn=self._url_expires_in,
         )
         return flask.redirect(url)
+
+    def get_upload_info(self, key):
+        fields = {}
+        conditions = []
+
+        content_type = mimetypes.guess_type(key)[0]
+        if content_type:
+            fields['Content-Type'] = content_type
+
+        max_content_length = flask.current_app.config['MAX_CONTENT_LENGTH']
+        if max_content_length is not None:
+            conditions.append(
+                ('content-length-range', 0, max_content_length),
+            )
+
+        # Boto doesn't automatically add fields to conditions.
+        for field_key, field_value in fields.items():
+            conditions.append({field_key: field_value})
+
+        post_info = self._client.generate_presigned_post(
+            Bucket=self._bucket_name,
+            Key=key,
+            Fields=fields,
+            Conditions=conditions,
+            ExpiresIn=self._url_expires_in,
+        )
+
+        return {
+            'method': 'POST',
+            'url': post_info['url'],
+            'data': post_info['fields'],
+        }

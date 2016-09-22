@@ -33,6 +33,10 @@ class TestFileAnnex(AbstractTestAnnex):
         assert response.status_code == 200
         assert response.mimetype == 'application/json'
 
+    def test_get_upload_info(self, annex):
+        with pytest.raises(NotImplementedError):
+            annex.get_upload_info('foo/qux.txt')
+
 
 class TestFileAnnexFromEnv(TestFileAnnex):
     @pytest.fixture
