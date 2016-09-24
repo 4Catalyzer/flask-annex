@@ -91,3 +91,6 @@ class FileAnnex(AnnexBase):
             as_attachment=True,
             attachment_filename=os.path.basename(key),
         )
+
+    def get_upload_info(self, key):
+        raise NotImplementedError("file annex does not support upload info")
