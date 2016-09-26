@@ -112,8 +112,8 @@ class S3Annex(AnnexBase):
             ExpiresIn=self._url_expires_in,
         )
 
-        return {
-            'method': 'POST',
-            'url': post_info['url'],
-            'data': post_info['fields'],
-        }
+        return flask.jsonify(
+            method='POST',
+            url=post_info['url'],
+            data=post_info['fields'],
+        )

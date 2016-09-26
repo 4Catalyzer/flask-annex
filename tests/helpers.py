@@ -1,4 +1,5 @@
 from io import BytesIO
+import json
 
 import pytest
 
@@ -13,6 +14,11 @@ def assert_key_value(annex, key, value):
     assert out_file.read() == value
 
 
+def get_upload_info(client, key):
+    response = client.get('/upload_info/{}'.format(key))
+    return json.loads(response.get_data(as_text=True))
+
+
 # -----------------------------------------------------------------------------
 
 
@@ -22,6 +28,16 @@ class AbstractTestAnnex(object):
         annex_base.save_file('foo/bar.txt', BytesIO(b'1\n'))
         annex_base.save_file('foo/baz.json', BytesIO(b'2\n'))
         return annex_base
+
+    @pytest.fixture(autouse=True)
+    def routes(self, app, annex):
+        @app.route('/file/<path:key>')
+        def file(key):
+            return annex.send_file(key)
+
+        @app.route('/upload_info/<path:key>')
+        def upload_info(key):
+            return annex.get_upload_info(key)
 
     def test_get_file(self, annex):
         assert_key_value(annex, 'foo/bar.txt', b'1\n')

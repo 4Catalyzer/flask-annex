@@ -6,7 +6,7 @@ import pytest
 
 from flask_annex import Annex
 
-from helpers import AbstractTestAnnex, assert_key_value
+from helpers import AbstractTestAnnex, assert_key_value, get_upload_info
 
 # -----------------------------------------------------------------------------
 
@@ -60,33 +60,30 @@ class TestS3Annex(AbstractTestAnnex):
         annex.save_file('foo/qux', BytesIO(b'6\n'))
         assert_key_value(annex, 'foo/qux', b'6\n')
 
-    def test_send_file(self, app, annex):
-        with app.test_request_context():
-            response = annex.send_file('foo/baz.json')
-
+    def test_send_file(self, client):
+        response = client.get('/file/foo/baz.json')
         assert response.status_code == 302
 
-    def test_get_upload_info(self, app, annex):
-        with app.app_context():
-            upload_info = annex.get_upload_info('foo/qux.txt')
-            assert upload_info['method'] == 'POST'
-            assert upload_info['url'] == \
-                'https://flask-annex.s3.amazonaws.com/'
-            assert upload_info['data']['key'] == 'foo/qux.txt'
-            assert upload_info['data']['Content-Type'] == 'text/plain'
+    def test_get_upload_info(self, client):
+        upload_info = get_upload_info(client, 'foo/qux.txt')
 
-            conditions = get_policy(upload_info)['conditions']
-            assert get_condition(conditions, 'bucket') == 'flask-annex'
-            assert get_condition(conditions, 'key') == 'foo/qux.txt'
-            assert get_condition(conditions, 'Content-Type') == 'text/plain'
+        assert upload_info['method'] == 'POST'
+        assert upload_info['url'] == 'https://flask-annex.s3.amazonaws.com/'
+        assert upload_info['data']['key'] == 'foo/qux.txt'
+        assert upload_info['data']['Content-Type'] == 'text/plain'
 
-    def test_get_upload_info_max_content_length(self, app, annex):
+        conditions = get_policy(upload_info)['conditions']
+        assert get_condition(conditions, 'bucket') == 'flask-annex'
+        assert get_condition(conditions, 'key') == 'foo/qux.txt'
+        assert get_condition(conditions, 'Content-Type') == 'text/plain'
+
+    def test_get_upload_info_max_content_length(self, app, client):
         app.config['MAX_CONTENT_LENGTH'] = 100
 
-        with app.app_context():
-            upload_info = annex.get_upload_info('foo/qux.txt')
-            conditions = get_policy(upload_info)['conditions']
-            assert get_condition(conditions, 'content-length-range')[1] == 100
+        upload_info = get_upload_info(client, 'foo/qux.txt')
+
+        conditions = get_policy(upload_info)['conditions']
+        assert get_condition(conditions, 'content-length-range') == [0, 100]
 
 
 class TestS3AnnexFromEnv(TestS3Annex):
