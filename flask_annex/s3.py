@@ -8,7 +8,7 @@ from .compat import string_types
 
 # -----------------------------------------------------------------------------
 
-DEFAULT_URL_EXPIRES_IN = 300
+DEFAULT_EXPIRES_IN = 300
 
 # -----------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class S3Annex(AnnexBase):
         region=None,
         access_key_id=None,
         secret_access_key=None,
-        url_expires_in=DEFAULT_URL_EXPIRES_IN,
+        expires_in=DEFAULT_EXPIRES_IN,
     ):
         self._client = boto3.client(
             's3',
@@ -30,7 +30,7 @@ class S3Annex(AnnexBase):
         )
 
         self._bucket_name = bucket_name
-        self._url_expires_in = url_expires_in
+        self._expires_in = expires_in
 
     def delete(self, key):
         self._client.delete_object(Bucket=self._bucket_name, Key=key)
@@ -82,7 +82,7 @@ class S3Annex(AnnexBase):
                 'Bucket': self._bucket_name,
                 'Key': key,
             },
-            ExpiresIn=self._url_expires_in,
+            ExpiresIn=self._expires_in,
         )
         return flask.redirect(url)
 
@@ -109,7 +109,7 @@ class S3Annex(AnnexBase):
             Key=key,
             Fields=fields,
             Conditions=conditions,
-            ExpiresIn=self._url_expires_in,
+            ExpiresIn=self._expires_in,
         )
 
         return {
