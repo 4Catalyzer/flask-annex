@@ -26,5 +26,5 @@ class AnnexBase(object):
     def send_file(self, key):
         raise NotImplementedError()
 
-    def get_upload_info(self, key):
+    def send_upload_info(self, key):
         raise NotImplementedError()
