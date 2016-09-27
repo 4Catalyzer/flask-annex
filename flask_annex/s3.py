@@ -86,7 +86,7 @@ class S3Annex(AnnexBase):
         )
         return flask.redirect(url)
 
-    def get_upload_info(self, key):
+    def send_upload_info(self, key):
         fields = {}
         conditions = []
 

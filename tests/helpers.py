@@ -37,7 +37,7 @@ class AbstractTestAnnex(object):
 
         @app.route('/upload_info/<path:key>')
         def upload_info(key):
-            return annex.get_upload_info(key)
+            return annex.send_upload_info(key)
 
     def test_get_file(self, annex):
         assert_key_value(annex, 'foo/bar.txt', b'1\n')
