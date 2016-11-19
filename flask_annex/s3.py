@@ -59,7 +59,9 @@ class S3Annex(AnnexBase):
 
     def save_file(self, key, in_file):
         # Get the content type from the key, rather than letting Boto try to
-        # figure it out from the file's name, which may be uninformative.
+        # figure it out from the file's name, which may be uninformative. It's
+        # better to do it here so S3 doesn't have a wrong content type, rather
+        # than at read time as with content disposition.
         content_type = mimetypes.guess_type(key)[0]
         if content_type:
             extra_args = {'ContentType': content_type}
@@ -81,6 +83,9 @@ class S3Annex(AnnexBase):
             Params={
                 'Bucket': self._bucket_name,
                 'Key': key,
+                # We don't need to specify filename explicitly; the basename
+                # of the key is in the URL and is appropriate here.
+                'ResponseContentDisposition': 'attachment',
             },
             ExpiresIn=self._expires_in,
         )

@@ -13,6 +13,7 @@ from helpers import AbstractTestAnnex, assert_key_value, get_upload_info
 try:
     import boto3
     from moto import mock_s3
+    import requests
 except ImportError:
     pytestmark = pytest.mark.skipif(True, reason="S3 support not installed")
 
@@ -63,6 +64,18 @@ class TestS3Annex(AbstractTestAnnex):
     def test_send_file(self, client):
         response = client.get('/file/foo/baz.json')
         assert response.status_code == 302
+
+        s3_url = response.headers['Location']
+
+        # FIXME: Moto doesn't support response-content-disposition, so assert
+        # on the generated URL rather than Moto's response.
+        assert 'response-content-disposition=attachment' in s3_url
+
+        s3_response = requests.get(s3_url)
+        assert s3_response.status_code == 200
+
+        # FIXME: Workaround for spulec/moto#657.
+        assert 'application/json' in s3_response.headers['Content-Type']
 
     def test_get_upload_info(self, client):
         upload_info = get_upload_info(client, 'foo/qux.txt')

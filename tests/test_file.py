@@ -30,6 +30,7 @@ class TestFileAnnex(AbstractTestAnnex):
         response = client.get('/file/foo/baz.json')
         assert response.status_code == 200
         assert response.mimetype == 'application/json'
+        assert 'attachment' in response.headers['Content-Disposition']
 
     def test_send_upload_info(self, annex):
         with pytest.raises(NotImplementedError):
