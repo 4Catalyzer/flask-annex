@@ -1,6 +1,7 @@
 from io import BytesIO
 import json
 
+import flask
 import pytest
 
 # -----------------------------------------------------------------------------
@@ -14,8 +15,8 @@ def assert_key_value(annex, key, value):
     assert out_file.read() == value
 
 
-def get_upload_info(client, key):
-    response = client.get('/upload_info/{}'.format(key))
+def get_upload_info(client, key, **kwargs):
+    response = client.get('/upload_info/{}'.format(key), **kwargs)
     return json.loads(response.get_data(as_text=True))
 
 
@@ -31,13 +32,30 @@ class AbstractTestAnnex(object):
 
     @pytest.fixture(autouse=True)
     def routes(self, app, annex):
-        @app.route('/file/<path:key>')
+        @app.route('/files/<path:key>', methods=('GET', 'PUT'))
         def file(key):
+            if flask.request.method != 'GET':
+                raise NotImplementedError()
             return annex.send_file(key)
 
         @app.route('/upload_info/<path:key>')
         def upload_info(key):
-            return annex.send_upload_info(key)
+            try:
+                upload_info = annex.get_upload_info(key)
+            except NotImplementedError:
+                upload_info = {
+                    'method': 'PUT',
+                    'url': flask.url_for(
+                        'file', key=key, _method='PUT', _external=True,
+                    ),
+                    'headers': {
+                        'Authorization': flask.request.headers.get(
+                            'Authorization',
+                        ),
+                    },
+                }
+
+            return flask.jsonify(upload_info)
 
     def test_get_file(self, annex):
         assert_key_value(annex, 'foo/bar.txt', b'1\n')

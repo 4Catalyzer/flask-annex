@@ -62,7 +62,7 @@ class TestS3Annex(AbstractTestAnnex):
         assert_key_value(annex, 'foo/qux', b'6\n')
 
     def test_send_file(self, client):
-        response = client.get('/file/foo/baz.json')
+        response = client.get('/files/foo/baz.json')
         assert response.status_code == 302
 
         s3_url = response.headers['Location']
@@ -90,12 +90,21 @@ class TestS3Annex(AbstractTestAnnex):
         assert get_condition(conditions, 'key') == 'foo/qux.txt'
         assert get_condition(conditions, 'Content-Type') == 'text/plain'
 
+        self.assert_default_content_length_range(conditions)
+
+    def assert_default_content_length_range(self, conditions):
+        with pytest.raises(KeyError):
+            get_condition(conditions, 'content-length-range')
+
     def test_get_upload_info_max_content_length(self, app, client):
         app.config['MAX_CONTENT_LENGTH'] = 100
 
         upload_info = get_upload_info(client, 'foo/qux.txt')
 
         conditions = get_policy(upload_info)['conditions']
+        self.assert_app_config_content_length_range(conditions)
+
+    def assert_app_config_content_length_range(self, conditions):
         assert get_condition(conditions, 'content-length-range') == [0, 100]
 
 
@@ -107,3 +116,15 @@ class TestS3AnnexFromEnv(TestS3Annex):
         monkeypatch.setenv('FLASK_ANNEX_S3_REGION', 'us-east-1')
 
         return Annex.from_env('FLASK_ANNEX')
+
+
+class TestS3AnnexMaxContentLength(TestS3Annex):
+    @pytest.fixture
+    def annex_base(self, bucket_name):
+        return Annex('s3', bucket_name, max_content_length=1000)
+
+    def assert_default_content_length_range(self, conditions):
+        assert get_condition(conditions, 'content-length-range') == [0, 1000]
+
+    def assert_app_config_content_length_range(self, conditions):
+        assert get_condition(conditions, 'content-length-range') == [0, 1000]

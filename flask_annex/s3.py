@@ -10,6 +10,8 @@ from .compat import string_types
 
 DEFAULT_EXPIRES_IN = 300
 
+MISSING = object()
+
 # -----------------------------------------------------------------------------
 
 
@@ -21,6 +23,7 @@ class S3Annex(AnnexBase):
         access_key_id=None,
         secret_access_key=None,
         expires_in=DEFAULT_EXPIRES_IN,
+        max_content_length=MISSING,
     ):
         self._client = boto3.client(
             's3',
@@ -31,6 +34,7 @@ class S3Annex(AnnexBase):
 
         self._bucket_name = bucket_name
         self._expires_in = expires_in
+        self._max_content_length = max_content_length
 
     def delete(self, key):
         self._client.delete_object(Bucket=self._bucket_name, Key=key)
@@ -91,7 +95,7 @@ class S3Annex(AnnexBase):
         )
         return flask.redirect(url)
 
-    def send_upload_info(self, key):
+    def get_upload_info(self, key):
         fields = {}
         conditions = []
 
@@ -99,7 +103,10 @@ class S3Annex(AnnexBase):
         if content_type:
             fields['Content-Type'] = content_type
 
-        max_content_length = flask.current_app.config['MAX_CONTENT_LENGTH']
+        if self._max_content_length is not MISSING:
+            max_content_length = self._max_content_length
+        else:
+            max_content_length = flask.current_app.config['MAX_CONTENT_LENGTH']
         if max_content_length is not None:
             conditions.append(
                 ('content-length-range', 0, max_content_length),
@@ -117,8 +124,8 @@ class S3Annex(AnnexBase):
             ExpiresIn=self._expires_in,
         )
 
-        return flask.jsonify(
-            method='POST',
-            url=post_info['url'],
-            data=post_info['fields'],
-        )
+        return {
+            'method': 'POST',
+            'url': post_info['url'],
+            'data': post_info['fields'],
+        }
