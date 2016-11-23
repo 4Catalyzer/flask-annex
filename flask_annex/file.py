@@ -36,9 +36,10 @@ class FileAnnex(AnnexBase):
             try:
                 os.rmdir(dir_name)
             except OSError as e:
-                if e.errno != errno.ENOTEMPTY:
+                if e.errno == errno.ENOTEMPTY:
+                    break
+                if e.errno != errno.ENOENT:
                     raise  # pragma: no cover
-                break
 
             key_dir_name = os.path.dirname(key_dir_name)
 
