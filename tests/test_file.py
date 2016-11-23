@@ -4,7 +4,7 @@ import pytest
 
 from flask_annex import Annex
 
-from helpers import AbstractTestAnnex, assert_key_value
+from helpers import AbstractTestAnnex, assert_key_value, get_upload_info
 
 # -----------------------------------------------------------------------------
 
@@ -27,14 +27,32 @@ class TestFileAnnex(AbstractTestAnnex):
         assert_key_value(annex, 'foo/qux.txt', b'6\n')
 
     def test_send_file(self, client):
-        response = client.get('/file/foo/baz.json')
+        response = client.get('/files/foo/baz.json')
         assert response.status_code == 200
         assert response.mimetype == 'application/json'
         assert 'attachment' in response.headers['Content-Disposition']
 
-    def test_send_upload_info(self, annex):
-        with pytest.raises(NotImplementedError):
-            annex.send_upload_info('foo/qux.txt')
+    def test_get_upload_info(self, client):
+        upload_info = get_upload_info(client, 'foo/qux.txt')
+        assert upload_info == {
+            'method': 'PUT',
+            'url': 'http://localhost/files/foo/qux.txt',
+            'headers': {
+                'Authorization': None,
+            },
+        }
+
+    def test_get_upload_info_authorized(self, client):
+        upload_info = get_upload_info(client, 'foo/qux.txt', headers={
+            'Authorization': 'Bearer foo',
+        })
+        assert upload_info == {
+            'method': 'PUT',
+            'url': 'http://localhost/files/foo/qux.txt',
+            'headers': {
+                'Authorization': 'Bearer foo',
+            },
+        }
 
 
 class TestFileAnnexFromEnv(TestFileAnnex):
