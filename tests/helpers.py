@@ -74,7 +74,10 @@ class AbstractTestAnnex(object):
         annex.delete('foo/bar.txt')
         assert not annex.list_keys('foo/bar.txt')
 
+    def test_delete_nonexistent(self, annex):
+        annex.delete('@@nonexistent')
+
     def test_delete_many(self, annex):
         assert annex.list_keys('')
-        annex.delete_many(('foo/bar.txt', 'foo/baz.json'))
+        annex.delete_many(('foo/bar.txt', 'foo/baz.json', 'foo/@@nonexistent'))
         assert not annex.list_keys('')

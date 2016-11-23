@@ -19,7 +19,13 @@ class FileAnnex(AnnexBase):
         return flask.safe_join(self._root_path, key)
 
     def delete(self, key):
-        os.unlink(self._get_filename(key))
+        try:
+            os.unlink(self._get_filename(key))
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                # It's fine if the file doesn't exist.
+                raise  # pragma: no cover
+
         self._clean_empty_dirs(key)
 
     def _clean_empty_dirs(self, key):
@@ -30,9 +36,10 @@ class FileAnnex(AnnexBase):
             try:
                 os.rmdir(dir_name)
             except OSError as e:
-                if e.errno != errno.ENOTEMPTY:
+                if e.errno == errno.ENOTEMPTY:
+                    break
+                if e.errno != errno.ENOENT:
                     raise  # pragma: no cover
-                break
 
             key_dir_name = os.path.dirname(key_dir_name)
 
