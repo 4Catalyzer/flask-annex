@@ -57,12 +57,16 @@ class FileAnnex(AnnexBase):
                 shutil.copyfileobj(in_fp, out_file)
 
     def list_keys(self, prefix):
-        pattern = self._get_filename('{}*'.format(prefix))
-        filenames = glob.glob(pattern)
+        prefix = os.path.normpath(prefix)
+        dir_pattern = self._get_filename('{}/**/*'.format(prefix))
+        file_pattern = self._get_filename('{}*'.format(prefix))
+        filenames = glob.glob(dir_pattern, recursive=True) \
+            + glob.glob(file_pattern)
 
         return [
             os.path.relpath(filename, self._root_path)
             for filename in filenames
+            if not os.path.isdir(filename)
         ]
 
     def save_file(self, key, in_file):
