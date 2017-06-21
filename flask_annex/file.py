@@ -56,7 +56,6 @@ class FileAnnex(AnnexBase):
                 shutil.copyfileobj(in_fp, out_file)
 
     def list_keys(self, prefix):
-        prefix = os.path.normpath(prefix)
         root = self._get_filename(prefix)
         filenames = [root] if os.path.isfile(root) else recursive_glob(root)
 

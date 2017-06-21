@@ -73,6 +73,10 @@ class AbstractTestAnnex(object):
             'foo/qux.txt',
         ]
 
+        # check that dangling '/' is not relevant
+        assert sorted(annex.list_keys('foo/')) == \
+            sorted(annex.list_keys('foo'))
+
     def test_list_keys_nested(self, annex):
         assert sorted(annex.list_keys('foo/')) == [
             'foo/bar.txt',
