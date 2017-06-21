@@ -66,6 +66,14 @@ class AbstractTestAnnex(object):
         assert open(out_filename).read() == '1\n'
 
     def test_list_keys(self, annex):
+        annex.save_file('foo/qux.txt', BytesIO(b'3\n'))
+        assert sorted(annex.list_keys('foo/')) == [
+            'foo/bar.txt',
+            'foo/baz.json',
+            'foo/qux.txt',
+        ]
+
+    def test_list_keys_nested(self, annex):
         assert sorted(annex.list_keys('foo/')) == [
             'foo/bar.txt',
             'foo/baz.json',
