@@ -1,12 +1,11 @@
 import errno
-import glob
 import os
 import shutil
 
 import flask
 
 from .base import AnnexBase
-from .compat import string_types
+from .compat import recursive_glob, string_types
 
 # -----------------------------------------------------------------------------
 
@@ -57,8 +56,8 @@ class FileAnnex(AnnexBase):
                 shutil.copyfileobj(in_fp, out_file)
 
     def list_keys(self, prefix):
-        pattern = self._get_filename('{}*'.format(prefix))
-        filenames = glob.glob(pattern)
+        root = self._get_filename(prefix)
+        filenames = [root] if os.path.isfile(root) else recursive_glob(root)
 
         return [
             os.path.relpath(filename, self._root_path)
