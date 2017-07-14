@@ -12,6 +12,7 @@ from helpers import AbstractTestAnnex, assert_key_value, get_upload_info
 
 try:
     import boto3
+    from mock import Mock
     from moto import mock_s3
     import requests
 except ImportError:
@@ -108,12 +109,12 @@ class TestS3Annex(AbstractTestAnnex):
         assert get_condition(conditions, 'content-length-range') == [0, 100]
 
     def test_delete_many_empty_list(self, annex, monkeypatch):
-        def assert_not_called(*args, **kwargs):
-            assert(False)
-
-        monkeypatch.setattr(annex._client, 'delete_objects', assert_not_called)
+        mock = Mock()
+        monkeypatch.setattr(annex._client, 'delete_objects', mock)
 
         annex.delete_many(tuple())
+
+        mock.assert_not_called()
 
 
 class TestS3AnnexFromEnv(TestS3Annex):
