@@ -2,6 +2,7 @@ import base64
 from io import BytesIO
 import json
 
+from mock import Mock
 import pytest
 
 from flask_annex import Annex
@@ -106,6 +107,14 @@ class TestS3Annex(AbstractTestAnnex):
 
     def assert_app_config_content_length_range(self, conditions):
         assert get_condition(conditions, 'content-length-range') == [0, 100]
+
+    def test_delete_many_empty_list(self, annex, monkeypatch):
+        mock = Mock()
+        monkeypatch.setattr(annex._client, 'delete_objects', mock)
+
+        annex.delete_many(tuple())
+
+        mock.assert_not_called()
 
 
 class TestS3AnnexFromEnv(TestS3Annex):
