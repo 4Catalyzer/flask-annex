@@ -40,11 +40,13 @@ class S3Annex(AnnexBase):
         self._client.delete_object(Bucket=self._bucket_name, Key=key)
 
     def delete_many(self, keys):
+        objects = tuple({'Key': key} for key in keys)
+        if not objects:
+            return
+
         self._client.delete_objects(
             Bucket=self._bucket_name,
-            Delete={
-                'Objects': tuple({'Key': key} for key in keys),
-            },
+            Delete={'Objects': objects},
         )
 
     def get_file(self, key, out_file):
