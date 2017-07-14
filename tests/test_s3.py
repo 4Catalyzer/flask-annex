@@ -2,6 +2,7 @@ import base64
 from io import BytesIO
 import json
 
+from mock import Mock
 import pytest
 
 from flask_annex import Annex
@@ -12,7 +13,6 @@ from helpers import AbstractTestAnnex, assert_key_value, get_upload_info
 
 try:
     import boto3
-    from mock import Mock
     from moto import mock_s3
     import requests
 except ImportError:
