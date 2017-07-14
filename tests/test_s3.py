@@ -107,6 +107,14 @@ class TestS3Annex(AbstractTestAnnex):
     def assert_app_config_content_length_range(self, conditions):
         assert get_condition(conditions, 'content-length-range') == [0, 100]
 
+    def test_delete_many_empty_list(self, annex, monkeypatch):
+        def assert_not_called(*args, **kwargs):
+            assert(False)
+
+        monkeypatch.setattr(annex._client, 'delete_objects', assert_not_called)
+
+        annex.delete_many(tuple())
+
 
 class TestS3AnnexFromEnv(TestS3Annex):
     @pytest.fixture
