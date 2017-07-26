@@ -1,5 +1,6 @@
-from setuptools import Command, setup
 import subprocess
+
+from setuptools import Command, setup
 
 # -----------------------------------------------------------------------------
 
