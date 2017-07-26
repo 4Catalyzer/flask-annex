@@ -13,16 +13,16 @@ if PY2:
 else:
     string_types = (str,)
 
+# -----------------------------------------------------------------------------
 
-def recursive_glob(rootdir, pattern='*'):
+
+def recursive_glob(root_dir, pattern='*'):
     """Search recursively for files matching a specified pattern.
 
     Adapted from http://stackoverflow.com/questions/2186525/use-a-glob-to-find-files-recursively-in-python  # noqa: E501
     """
-
-    matches = []
-    for root, _dirnames, filenames in os.walk(rootdir):
-        for filename in fnmatch.filter(filenames, pattern):
-            matches.append(os.path.join(root, filename))
-
-    return matches
+    return tuple(
+        os.path.join(root, filename)
+        for root, _dirnames, filenames in os.walk(root_dir)
+        for filename in fnmatch.filter(filenames, pattern),
+    )
