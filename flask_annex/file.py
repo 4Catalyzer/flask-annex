@@ -57,12 +57,12 @@ class FileAnnex(AnnexBase):
 
     def list_keys(self, prefix):
         root = self._get_filename(prefix)
-        filenames = [root] if os.path.isfile(root) else recursive_glob(root)
+        filenames = (root,) if os.path.isfile(root) else recursive_glob(root)
 
-        return [
+        return tuple(
             os.path.relpath(filename, self._root_path)
-            for filename in filenames
-        ]
+            for filename in filenames,
+        )
 
     def save_file(self, key, in_file):
         out_filename = self._get_filename(key)
