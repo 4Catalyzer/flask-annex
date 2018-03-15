@@ -25,7 +25,7 @@ def system(command):
 
 setup(
     name="Flask-Annex",
-    version='0.4.2',
+    version='0.4.3',
     description="Efficient integration of external storage services for Flask",
     url='https://github.com/4Catalyzer/flask-annex',
     author="Jimmy Jia",
