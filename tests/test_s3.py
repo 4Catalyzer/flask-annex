@@ -6,7 +6,6 @@ from mock import Mock
 import pytest
 
 from flask_annex import Annex
-
 from .helpers import AbstractTestAnnex, assert_key_value, get_upload_info
 
 # -----------------------------------------------------------------------------
