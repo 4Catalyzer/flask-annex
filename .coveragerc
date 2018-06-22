@@ -1,5 +1,6 @@
 [run]
-source = flask_annex
+branch = true
+include = flask_annex
 
 [report]
 exclude_lines =
