@@ -107,6 +107,14 @@ class TestS3Annex(AbstractTestAnnex):
     def assert_app_config_content_length_range(self, conditions):
         assert get_condition(conditions, 'content-length-range') == [0, 100]
 
+    def test_get_upload_info_unknown_content_type(self, client):
+        upload_info = get_upload_info(client, 'foo/qux.@@nonexistent')
+
+        assert upload_info['method'] == 'POST'
+        assert upload_info['url'] == 'https://flask-annex.s3.amazonaws.com/'
+        assert upload_info['data']['key'] == 'foo/qux.@@nonexistent'
+        assert 'Content-Type' not in upload_info['data']
+
     def test_delete_many_empty_list(self, annex, monkeypatch):
         mock = Mock()
         monkeypatch.setattr(annex._client, 'delete_objects', mock)
