@@ -24,5 +24,5 @@ def recursive_glob(root_dir, pattern='*'):
     return tuple(
         os.path.join(root, filename)
         for root, _dirnames, filenames in os.walk(root_dir)
-        for filename in fnmatch.filter(filenames, pattern),
+        for filename in fnmatch.filter(filenames, pattern)
     )

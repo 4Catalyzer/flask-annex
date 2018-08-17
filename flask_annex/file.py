@@ -61,7 +61,7 @@ class FileAnnex(AnnexBase):
 
         return tuple(
             os.path.relpath(filename, self._root_path)
-            for filename in filenames,
+            for filename in filenames
         )
 
     def save_file(self, key, in_file):
