@@ -84,6 +84,11 @@ class TestS3Annex(AbstractTestAnnex):
         assert upload_info['url'] == 'https://flask-annex.s3.amazonaws.com/'
         assert upload_info['data']['key'] == 'foo/qux.txt'
         assert upload_info['data']['Content-Type'] == 'text/plain'
+        assert upload_info['post_data'][0] == ['Content-Type', 'text/plain']
+        assert upload_info['post_data'][1] == ['key', 'foo/qux.txt']
+        assert upload_info['post_data'][2] == ['AWSAccessKeyId', 'foobar_key']
+        assert upload_info['post_data'][3][0] == 'policy'
+        assert upload_info['post_data'][4][0] == 'signature'
 
         conditions = get_policy(upload_info)['conditions']
         assert get_condition(conditions, 'bucket') == 'flask-annex'

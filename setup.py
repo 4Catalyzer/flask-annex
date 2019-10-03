@@ -49,6 +49,12 @@ setup(
         'Flask >= 0.10',
     ),
     extras_require={
+        'dev': (
+            'pytest',
+            'mock',
+            'moto',
+            'requests',
+        ),
         's3': ('boto3 >= 1.4.0',),
     },
     cmdclass={
