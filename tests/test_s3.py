@@ -32,12 +32,12 @@ def bucket_name():
 def get_policy(upload_info):
     # filter for the "policy" field; there should only be one instance
     policy_items = list(
-        filter(lambda x: x[0] == 'policy', upload_info['post_data'])
+        filter(lambda x: x[0] == 'policy', upload_info['post_data']),
     )
     policy_item = policy_items[0]
 
     return json.loads(
-        base64.urlsafe_b64decode(policy_item[1].encode(),).decode(),
+        base64.urlsafe_b64decode(policy_item[1].encode()).decode(),
     )
 
 
@@ -122,7 +122,7 @@ class TestS3Annex(AbstractTestAnnex):
 
         # filter for the "key" field; there should be only one instance
         key_items = list(
-            filter(lambda x: x[0] == 'key', upload_info['post_data'])
+            filter(lambda x: x[0] == 'key', upload_info['post_data']),
         )
         key_item = key_items[0]
         assert key_item[1] == 'foo/qux.@@nonexistent'
