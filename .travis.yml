@@ -2,8 +2,6 @@ sudo: false
 
 language: python
 python:
-  - "2.7"
-  - "3.5"
   - "3.6"
   - "pypy"
 
@@ -12,8 +10,6 @@ env:
 
 matrix:
   include:
-    - python: "2.7"
-      env: TOXENV=py-base
     - python: "3.6"
       env: TOXENV=py-base
     - # TODO: Remove this workaround once travis-ci/travis-ci#9815 is fixed.

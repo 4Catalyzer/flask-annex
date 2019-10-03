@@ -30,10 +30,14 @@ def bucket_name():
 
 
 def get_policy(upload_info):
+    # filter for the "policy" field; there should only be one instance
+    policy_items = list(
+        filter(lambda x: x[0] == 'policy', upload_info['post_data']),
+    )
+    policy_item = policy_items[0]
+
     return json.loads(
-        base64.urlsafe_b64decode(
-            upload_info['data']['policy'].encode(),
-        ).decode(),
+        base64.urlsafe_b64decode(policy_item[1].encode()).decode(),
     )
 
 
@@ -82,8 +86,11 @@ class TestS3Annex(AbstractTestAnnex):
 
         assert upload_info['method'] == 'POST'
         assert upload_info['url'] == 'https://flask-annex.s3.amazonaws.com/'
-        assert upload_info['data']['key'] == 'foo/qux.txt'
-        assert upload_info['data']['Content-Type'] == 'text/plain'
+        assert upload_info['post_data'][0] == ['Content-Type', 'text/plain']
+        assert upload_info['post_data'][1] == ['key', 'foo/qux.txt']
+        assert upload_info['post_data'][2] == ['AWSAccessKeyId', 'foobar_key']
+        assert upload_info['post_data'][3][0] == 'policy'
+        assert upload_info['post_data'][4][0] == 'signature'
 
         conditions = get_policy(upload_info)['conditions']
         assert get_condition(conditions, 'bucket') == 'flask-annex'
@@ -112,8 +119,17 @@ class TestS3Annex(AbstractTestAnnex):
 
         assert upload_info['method'] == 'POST'
         assert upload_info['url'] == 'https://flask-annex.s3.amazonaws.com/'
-        assert upload_info['data']['key'] == 'foo/qux.@@nonexistent'
-        assert 'Content-Type' not in upload_info['data']
+
+        # filter for the "key" field; there should be only one instance
+        key_items = list(
+            filter(lambda x: x[0] == 'key', upload_info['post_data']),
+        )
+        key_item = key_items[0]
+        assert key_item[1] == 'foo/qux.@@nonexistent'
+
+        # should not have 'Content-Type' in the post data
+        assert all(post_data_pair[0] != 'Content-Type'
+                   for post_data_pair in upload_info['post_data'])
 
     def test_delete_many_empty_list(self, annex, monkeypatch):
         mock = Mock()

@@ -132,5 +132,5 @@ class S3Annex(AnnexBase):
         return {
             'method': 'POST',
             'url': post_info['url'],
-            'data': post_info['fields'],
+            'post_data': tuple(post_info['fields'].items()),
         }

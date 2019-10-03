@@ -2,6 +2,8 @@
 Efficient integration of external storage services for
 [Flask](http://flask.pocoo.org/).
 
+Run `pip install -e .[s3,tests]` to install for development and with `S3` support
+
 [![Codecov][codecov-badge]][codecov]
 
 [build-badge]: https://img.shields.io/travis/4Catalyzer/flask-annex/master.svg
