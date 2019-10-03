@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from io import BytesIO
 import json
 
@@ -17,7 +18,9 @@ def assert_key_value(annex, key, value):
 
 def get_upload_info(client, key, **kwargs):
     response = client.get('/upload_info/{}'.format(key), **kwargs)
-    return json.loads(response.get_data(as_text=True))
+    return json.loads(
+        response.get_data(as_text=True), object_pairs_hook=OrderedDict
+    )
 
 
 # -----------------------------------------------------------------------------
