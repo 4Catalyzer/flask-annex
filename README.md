@@ -2,7 +2,7 @@
 Efficient integration of external storage services for
 [Flask](http://flask.pocoo.org/).
 
-Run `pip install -e .[dev,s3]` to install for development and with `S3` support
+Run `pip install -e .[s3,tests]` to install for development and with `S3` support
 
 [![Codecov][codecov-badge]][codecov]
 

@@ -51,9 +51,9 @@ setup(
     extras_require={
         's3': ('boto3 >= 1.4.0',),
         'tests': (
-            'pytest',
             'mock',
             'moto',
+            'pytest',
             'requests',
         ),
     },
