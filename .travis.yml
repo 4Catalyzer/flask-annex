@@ -1,20 +1,18 @@
-language: python
 dist: xenial
+
+language: python
 python:
-  - "3.6"
   - "3.7"
+  - "3.6"
 
 env:
   - TOXENV=py-s3
 
 matrix:
   include:
-    - python: "3.7"
-      env: TOXENV=lint
-    - python: "3.7"
-      env: TOXENV=py-base
-    - python: "pypy3"
-      env: TOXENV=py-s3
+    - env: TOXENV=lint
+    - env: TOXENV=py-base
+    - python: pypy3
 
 cache: pip
 

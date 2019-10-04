@@ -88,7 +88,7 @@ class FileAnnex(AnnexBase):
 
         # Verify that we aren't trying to create the root path.
         if not os.path.exists(self._root_path):
-            raise IOError(
+            raise FileNotFoundError(
                 f"root path {self._root_path} does not exist",
             )
 
