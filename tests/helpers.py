@@ -16,14 +16,14 @@ def assert_key_value(annex, key, value):
 
 
 def get_upload_info(client, key, **kwargs):
-    response = client.get('/upload_info/{}'.format(key), **kwargs)
+    response = client.get(f'/upload_info/{key}', **kwargs)
     return json.loads(response.get_data(as_text=True))
 
 
 # -----------------------------------------------------------------------------
 
 
-class AbstractTestAnnex(object):
+class AbstractTestAnnex:
     @pytest.fixture
     def annex(self, annex_base):
         annex_base.save_file('foo/bar.txt', BytesIO(b'1\n'))

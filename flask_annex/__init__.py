@@ -11,7 +11,7 @@ def get_annex_class(storage):
         from .s3 import S3Annex
         return S3Annex
     else:
-        raise ValueError("unsupported storage {}".format(storage))
+        raise ValueError(f"unsupported storage {storage}")
 
 
 # -----------------------------------------------------------------------------
@@ -19,7 +19,7 @@ def get_annex_class(storage):
 
 # We don't use the base class here, as this is just a convenience thing rather
 # than an actual annex class.
-class Annex(object):
+class Annex:
     def __new__(cls, storage, *args, **kwargs):
         annex_class = get_annex_class(storage)
         return annex_class(*args, **kwargs)
@@ -30,7 +30,7 @@ class Annex(object):
 
         # Use storage-specific env namespace when configuring a generic annex,
         # to avoid having unrecognized extra keys when changing storage.
-        storage_namespace = '{}_{}'.format(namespace, storage.upper())
+        storage_namespace = f'{namespace}_{storage.upper()}'
 
         annex_class = get_annex_class(storage)
         return annex_class.from_env(storage_namespace)

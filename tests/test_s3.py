@@ -1,8 +1,8 @@
 import base64
 from io import BytesIO
 import json
+from unittest.mock import Mock
 
-from mock import Mock
 import pytest
 
 from flask_annex import Annex
