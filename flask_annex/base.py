@@ -3,7 +3,7 @@ from . import utils
 # -----------------------------------------------------------------------------
 
 
-class AnnexBase(object):
+class AnnexBase:
     @classmethod
     def from_env(cls, namespace):
         return cls(**utils.get_config_from_env(namespace))

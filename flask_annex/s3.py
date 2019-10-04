@@ -4,7 +4,6 @@ import boto3
 import flask
 
 from .base import AnnexBase
-from .compat import string_types
 
 # -----------------------------------------------------------------------------
 
@@ -19,6 +18,7 @@ class S3Annex(AnnexBase):
     def __init__(
         self,
         bucket_name,
+        *,
         region=None,
         access_key_id=None,
         secret_access_key=None,
@@ -43,8 +43,7 @@ class S3Annex(AnnexBase):
         # casting to tuple because keys might be iterable
         objects = tuple({'Key': key} for key in keys)
         if not objects:
-            # this is not just an optimization, boto fails if the array
-            # is empty
+            # boto fails if the array is empty.
             return
 
         self._client.delete_objects(
@@ -53,7 +52,7 @@ class S3Annex(AnnexBase):
         )
 
     def get_file(self, key, out_file):
-        if isinstance(out_file, string_types):
+        if isinstance(out_file, str):
             self._client.download_file(self._bucket_name, key, out_file)
         else:
             self._client.download_fileobj(self._bucket_name, key, out_file)
@@ -77,7 +76,7 @@ class S3Annex(AnnexBase):
         else:
             extra_args = None
 
-        if isinstance(in_file, string_types):
+        if isinstance(in_file, str):
             self._client.upload_file(
                 in_file, self._bucket_name, key, extra_args,
             )

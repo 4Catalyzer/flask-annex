@@ -1,8 +1,8 @@
-sudo: false
-
 language: python
+dist: xenial
 python:
   - "3.6"
+  - "3.7"
   - "pypy"
 
 env:
@@ -10,17 +10,14 @@ env:
 
 matrix:
   include:
-    - python: "3.6"
+    - python: "3.7"
+      env: TOXENV=lint
+    - python: "3.7"
       env: TOXENV=py-base
-    - # TODO: Remove this workaround once travis-ci/travis-ci#9815 is fixed.
-      sudo: true
-      dist: xenial
-      python: "3.7"
+    - python: "3.7"
       env: TOXENV=py-s3
 
-cache:
-  directories:
-    - $HOME/.cache/pip
+cache: pip
 
 before_install:
   - pip install -U pip

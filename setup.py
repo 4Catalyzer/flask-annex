@@ -31,7 +31,8 @@ setup(
     author="Jimmy Jia",
     author_email='tesrin@gmail.com',
     license='MIT',
-    classifiers=(
+    python_requires=">=3.6",
+    classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Framework :: Flask',
         'Environment :: Web Environment',
@@ -40,9 +41,12 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules',
-    ),
+    ],
     keywords='storage s3 flask',
     packages=('flask_annex',),
     install_requires=(
@@ -50,12 +54,9 @@ setup(
     ),
     extras_require={
         's3': ('boto3 >= 1.4.0',),
-        'tests': (
-            'mock',
-            'moto',
-            'pytest',
-            'requests',
-        ),
+        'lint': ('flake8', 'flake8-config-4catalyzer'),
+        'tests': ('pytest', 'pytest-cov'),
+        'tests-s3': ('moto', 'requests'),
     },
     cmdclass={
         'clean': system('rm -rf build dist *.egg-info'),

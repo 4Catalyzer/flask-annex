@@ -1,4 +1,4 @@
 [flake8]
-ignore = C813
+ignore = C814
 import-order-style = google
 application-import-names = flask_annex
