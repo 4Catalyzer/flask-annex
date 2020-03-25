@@ -65,6 +65,9 @@ class S3Annex(AnnexBase):
             return ()
         return tuple(item['Key'] for item in response['Contents'])
 
+    def lookup(self, key):
+        return self._client.head_object(Bucket=self._bucket_name, Key=key)
+
     def save_file(self, key, in_file):
         # Get the content type from the key, rather than letting Boto try to
         # figure it out from the file's name, which may be uninformative. It's

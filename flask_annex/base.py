@@ -20,6 +20,9 @@ class AnnexBase:
     def list_keys(self, prefix):
         raise NotImplementedError()
 
+    def lookup(self, key):
+        raise NotImplementedError()
+
     def save_file(self, key, in_file):
         raise NotImplementedError()
 

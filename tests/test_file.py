@@ -31,6 +31,9 @@ class TestFileAnnex(AbstractTestAnnex):
         assert response.mimetype == 'application/json'
         assert 'attachment' in response.headers['Content-Disposition']
 
+    def test_lookup(self, client):
+        assert client.lookup('foo/bar.txt') == 'test'
+
     def test_get_upload_info(self, client):
         upload_info = get_upload_info(client, 'foo/qux.txt')
         assert upload_info == {
