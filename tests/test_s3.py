@@ -81,6 +81,9 @@ class TestS3Annex(AbstractTestAnnex):
         # FIXME: Workaround for spulec/moto#657.
         assert 'application/json' in s3_response.headers['Content-Type']
 
+    def test_lookup(self, annex):
+        assert annex.lookup('foo/bar.txt').get('ContentLength') == 2
+
     def test_get_upload_info(self, client):
         upload_info = get_upload_info(client, 'foo/qux.txt')
 
