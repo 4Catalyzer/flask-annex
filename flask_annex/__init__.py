@@ -4,11 +4,13 @@ from . import utils
 
 
 def get_annex_class(storage):
-    if storage == 'file':
+    if storage == "file":
         from .file import FileAnnex
+
         return FileAnnex
-    elif storage == 's3':
+    elif storage == "s3":
         from .s3 import S3Annex
+
         return S3Annex
     else:
         raise ValueError(f"unsupported storage {storage}")
@@ -26,11 +28,11 @@ class Annex:
 
     @staticmethod
     def from_env(namespace):
-        storage = utils.get_config_from_env(namespace)['storage']
+        storage = utils.get_config_from_env(namespace)["storage"]
 
         # Use storage-specific env namespace when configuring a generic annex,
         # to avoid having unrecognized extra keys when changing storage.
-        storage_namespace = f'{namespace}_{storage.upper()}'
+        storage_namespace = f"{namespace}_{storage.upper()}"
 
         annex_class = get_annex_class(storage)
         return annex_class.from_env(storage_namespace)

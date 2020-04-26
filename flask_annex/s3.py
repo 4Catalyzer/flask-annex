@@ -26,7 +26,7 @@ class S3Annex(AnnexBase):
         max_content_length=MISSING,
     ):
         self._client = boto3.client(
-            's3',
+            "s3",
             region,
             aws_access_key_id=access_key_id,
             aws_secret_access_key=secret_access_key,
@@ -41,14 +41,13 @@ class S3Annex(AnnexBase):
 
     def delete_many(self, keys):
         # casting to tuple because keys might be iterable
-        objects = tuple({'Key': key} for key in keys)
+        objects = tuple({"Key": key} for key in keys)
         if not objects:
             # boto fails if the array is empty.
             return
 
         self._client.delete_objects(
-            Bucket=self._bucket_name,
-            Delete={'Objects': objects},
+            Bucket=self._bucket_name, Delete={"Objects": objects},
         )
 
     def get_file(self, key, out_file):
@@ -61,9 +60,9 @@ class S3Annex(AnnexBase):
         response = self._client.list_objects_v2(
             Bucket=self._bucket_name, Prefix=prefix,
         )
-        if 'Contents' not in response:
+        if "Contents" not in response:
             return ()
-        return tuple(item['Key'] for item in response['Contents'])
+        return tuple(item["Key"] for item in response["Contents"])
 
     def save_file(self, key, in_file):
         # Get the content type from the key, rather than letting Boto try to
@@ -72,7 +71,7 @@ class S3Annex(AnnexBase):
         # than at read time as with content disposition.
         content_type = mimetypes.guess_type(key)[0]
         if content_type:
-            extra_args = {'ContentType': content_type}
+            extra_args = {"ContentType": content_type}
         else:
             extra_args = None
 
@@ -87,13 +86,13 @@ class S3Annex(AnnexBase):
 
     def send_file(self, key):
         url = self._client.generate_presigned_url(
-            ClientMethod='get_object',
+            ClientMethod="get_object",
             Params={
-                'Bucket': self._bucket_name,
-                'Key': key,
+                "Bucket": self._bucket_name,
+                "Key": key,
                 # We don't need to specify filename explicitly; the basename
                 # of the key is in the URL and is appropriate here.
-                'ResponseContentDisposition': 'attachment',
+                "ResponseContentDisposition": "attachment",
             },
             ExpiresIn=self._expires_in,
         )
@@ -105,16 +104,14 @@ class S3Annex(AnnexBase):
 
         content_type = mimetypes.guess_type(key)[0]
         if content_type:
-            fields['Content-Type'] = content_type
+            fields["Content-Type"] = content_type
 
         if self._max_content_length is not MISSING:
             max_content_length = self._max_content_length
         else:
-            max_content_length = flask.current_app.config['MAX_CONTENT_LENGTH']
+            max_content_length = flask.current_app.config["MAX_CONTENT_LENGTH"]
         if max_content_length is not None:
-            conditions.append(
-                ('content-length-range', 0, max_content_length),
-            )
+            conditions.append(("content-length-range", 0, max_content_length),)
 
         # Boto doesn't automatically add fields to conditions.
         for field_key, field_value in fields.items():
@@ -129,7 +126,7 @@ class S3Annex(AnnexBase):
         )
 
         return {
-            'method': 'POST',
-            'url': post_info['url'],
-            'post_data': tuple(post_info['fields'].items()),
+            "method": "POST",
+            "url": post_info["url"],
+            "post_data": tuple(post_info["fields"].items()),
         }
