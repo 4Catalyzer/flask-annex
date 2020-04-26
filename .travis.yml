@@ -7,7 +7,7 @@ python:
 env:
   - TOXENV=py-s3
 
-matrix:
+jobs:
   include:
     - env: TOXENV=lint
     - env: TOXENV=py-base

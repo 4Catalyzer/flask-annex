@@ -51,7 +51,7 @@ class FileAnnex(AnnexBase):
         if isinstance(out_file, str):
             shutil.copyfile(in_filename, out_file)
         else:
-            with open(in_filename, 'rb') as in_fp:
+            with open(in_filename, "rb") as in_fp:
                 shutil.copyfileobj(in_fp, out_file)
 
     def list_keys(self, prefix):
@@ -78,7 +78,7 @@ class FileAnnex(AnnexBase):
         if isinstance(in_file, str):
             shutil.copyfile(in_file, out_filename)
         else:
-            with open(out_filename, 'wb') as out_fp:
+            with open(out_filename, "wb") as out_fp:
                 shutil.copyfileobj(in_file, out_fp)
 
     def _ensure_key_dir(self, key):
@@ -96,7 +96,8 @@ class FileAnnex(AnnexBase):
 
     def send_file(self, key):
         return flask.send_from_directory(
-            self._root_path, key,
+            self._root_path,
+            key,
             as_attachment=True,
             attachment_filename=os.path.basename(key),
         )
