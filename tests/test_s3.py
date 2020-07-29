@@ -67,7 +67,7 @@ class TestS3Annex(AbstractTestAnnex):
         assert_key_value(annex, "foo/qux", b"6\n")
 
     def test_send_file_url(self, annex):
-        url = annex.send_file("foo/qux", True)
+        url = annex.send_file("foo/qux", no_redirect=True)
         assert re.match(
             r"https:\/\/flask-annex\.s3\.amazonaws\.com\/foo\/qux\?response-content-disposition=attachment&AWSAccessKeyId=foobar_key&Signature=.*&Expires=.{10}",
             url,
