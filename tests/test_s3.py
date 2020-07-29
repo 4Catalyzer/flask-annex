@@ -1,5 +1,6 @@
 import base64
 import json
+import re
 from io import BytesIO
 from unittest.mock import Mock
 
@@ -64,6 +65,13 @@ class TestS3Annex(AbstractTestAnnex):
     def test_save_file_unknown_type(self, annex):
         annex.save_file("foo/qux", BytesIO(b"6\n"))
         assert_key_value(annex, "foo/qux", b"6\n")
+
+    def test_send_file_url(self, annex):
+        url = annex.send_file("foo/qux", True)
+        assert re.match(
+            r"https:\/\/flask-annex\.s3\.amazonaws\.com\/foo\/qux\?response-content-disposition=attachment&AWSAccessKeyId=foobar_key&Signature=.*&Expires=.{10}",
+            url,
+        )
 
     def test_send_file(self, client):
         response = client.get("/files/foo/baz.json")

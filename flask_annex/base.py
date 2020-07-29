@@ -23,7 +23,7 @@ class AnnexBase:
     def save_file(self, key, in_file):
         raise NotImplementedError()
 
-    def send_file(self, key):
+    def send_file(self, key, no_redirect):
         raise NotImplementedError()
 
     def get_upload_info(self, key):

@@ -84,7 +84,7 @@ class S3Annex(AnnexBase):
                 in_file, self._bucket_name, key, extra_args,
             )
 
-    def send_file(self, key):
+    def send_file(self, key, no_redirect = False):
         url = self._client.generate_presigned_url(
             ClientMethod="get_object",
             Params={
@@ -96,7 +96,7 @@ class S3Annex(AnnexBase):
             },
             ExpiresIn=self._expires_in,
         )
-        return flask.redirect(url)
+        return url if no_redirect else flask.redirect(url)
 
     def get_upload_info(self, key):
         fields = {}
