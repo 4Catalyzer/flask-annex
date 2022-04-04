@@ -1,9 +1,9 @@
 import base64
 import json
+import pytest
 from io import BytesIO
 from unittest.mock import Mock
 
-import pytest
 from flask_annex import Annex
 
 from .helpers import AbstractTestAnnex, assert_key_value, get_upload_info
@@ -12,8 +12,8 @@ from .helpers import AbstractTestAnnex, assert_key_value, get_upload_info
 
 try:
     import boto3
-    from moto import mock_s3
     import requests
+    from moto import mock_s3
 except ImportError:
     pytestmark = pytest.mark.skipif(True, reason="S3 support not installed")
 

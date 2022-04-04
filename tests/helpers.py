@@ -1,8 +1,7 @@
-import json
-from io import BytesIO
-
 import flask
+import json
 import pytest
+from io import BytesIO
 
 # -----------------------------------------------------------------------------
 

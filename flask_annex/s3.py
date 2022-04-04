@@ -1,7 +1,6 @@
-import mimetypes
-
 import boto3
 import flask
+import mimetypes
 
 from .base import AnnexBase
 
