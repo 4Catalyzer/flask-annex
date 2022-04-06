@@ -1,8 +1,8 @@
 import errno
+import flask
 import os
 import shutil
-
-import flask
+import werkzeug
 
 from .base import AnnexBase
 
@@ -14,7 +14,7 @@ class FileAnnex(AnnexBase):
         self._root_path = root_path
 
     def _get_filename(self, key):
-        return flask.safe_join(self._root_path, key)
+        return werkzeug.utils.safe_join(self._root_path, key)
 
     def delete(self, key):
         try:

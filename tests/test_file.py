@@ -1,6 +1,6 @@
+import pytest
 from io import BytesIO
 
-import pytest
 from flask_annex import Annex
 
 from .helpers import AbstractTestAnnex, assert_key_value, get_upload_info

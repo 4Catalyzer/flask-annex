@@ -1,5 +1,4 @@
 import subprocess
-
 from setuptools import Command, setup
 
 # -----------------------------------------------------------------------------
@@ -25,13 +24,13 @@ def system(command):
 
 setup(
     name="Flask-Annex",
-    version="0.5.0",
+    version="1.0.0",
     description="Efficient integration of external storage services for Flask",
     url="https://github.com/4Catalyzer/flask-annex",
     author="Jimmy Jia",
     author_email="tesrin@gmail.com",
     license="MIT",
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Framework :: Flask",
@@ -50,7 +49,7 @@ setup(
     ],
     keywords="storage s3 flask",
     packages=("flask_annex",),
-    install_requires=("Flask >= 0.10",),
+    install_requires=("Flask >= 2.0",),
     extras_require={
         "s3": ("boto3 >= 1.4.0",),
         "tests": ("pytest", "pytest-cov"),
