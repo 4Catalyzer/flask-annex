@@ -45,7 +45,10 @@ class AbstractTestAnnex:
                 upload_info = {
                     "method": "PUT",
                     "url": flask.url_for(
-                        "file", key=key, _method="PUT", _external=True,
+                        "file",
+                        key=key,
+                        _method="PUT",
+                        _external=True,
                     ),
                     "headers": {
                         "Authorization": flask.request.headers.get(

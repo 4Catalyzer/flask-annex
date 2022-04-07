@@ -36,17 +36,25 @@ class TestFileAnnex(AbstractTestAnnex):
         assert upload_info == {
             "method": "PUT",
             "url": "http://localhost/files/foo/qux.txt",
-            "headers": {"Authorization": None,},
+            "headers": {
+                "Authorization": None,
+            },
         }
 
     def test_get_upload_info_authorized(self, client):
         upload_info = get_upload_info(
-            client, "foo/qux.txt", headers={"Authorization": "Bearer foo",}
+            client,
+            "foo/qux.txt",
+            headers={
+                "Authorization": "Bearer foo",
+            },
         )
         assert upload_info == {
             "method": "PUT",
             "url": "http://localhost/files/foo/qux.txt",
-            "headers": {"Authorization": "Bearer foo",},
+            "headers": {
+                "Authorization": "Bearer foo",
+            },
         }
 
 

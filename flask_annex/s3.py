@@ -46,7 +46,8 @@ class S3Annex(AnnexBase):
             return
 
         self._client.delete_objects(
-            Bucket=self._bucket_name, Delete={"Objects": objects},
+            Bucket=self._bucket_name,
+            Delete={"Objects": objects},
         )
 
     def get_file(self, key, out_file):
@@ -57,7 +58,8 @@ class S3Annex(AnnexBase):
 
     def list_keys(self, prefix):
         response = self._client.list_objects_v2(
-            Bucket=self._bucket_name, Prefix=prefix,
+            Bucket=self._bucket_name,
+            Prefix=prefix,
         )
         if "Contents" not in response:
             return ()
@@ -76,11 +78,17 @@ class S3Annex(AnnexBase):
 
         if isinstance(in_file, str):
             self._client.upload_file(
-                in_file, self._bucket_name, key, extra_args,
+                in_file,
+                self._bucket_name,
+                key,
+                extra_args,
             )
         else:
             self._client.upload_fileobj(
-                in_file, self._bucket_name, key, extra_args,
+                in_file,
+                self._bucket_name,
+                key,
+                extra_args,
             )
 
     def send_file(self, key):
@@ -110,7 +118,9 @@ class S3Annex(AnnexBase):
         else:
             max_content_length = flask.current_app.config["MAX_CONTENT_LENGTH"]
         if max_content_length is not None:
-            conditions.append(("content-length-range", 0, max_content_length),)
+            conditions.append(
+                ("content-length-range", 0, max_content_length),
+            )
 
         # Boto doesn't automatically add fields to conditions.
         for field_key, field_value in fields.items():
