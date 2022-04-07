@@ -51,6 +51,7 @@ setup(
     keywords="storage s3 flask",
     packages=("flask_annex",),
     install_requires=("Flask >= 2.0",),
+    setup_requires=['wheel'],
     extras_require={
         "s3": ("boto3 >= 1.4.0",),
         "tests": ("pytest", "pytest-cov"),
