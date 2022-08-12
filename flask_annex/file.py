@@ -99,7 +99,7 @@ class FileAnnex(AnnexBase):
             self._root_path,
             key,
             as_attachment=True,
-            attachment_filename=os.path.basename(key),
+            download_name=os.path.basename(key),
         )
 
     def get_upload_info(self, key):
