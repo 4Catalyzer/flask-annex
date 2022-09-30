@@ -95,11 +95,12 @@ class FileAnnex(AnnexBase):
         os.makedirs(dir_name, exist_ok=True)
 
     def send_file(self, key):
+        if flask.__version__ >= "2.2.0":
+            download_name = {"download_name": os.path.basename(key)}
+        else:
+            download_name = {"attachment_filename": os.path.basename(key)}
         return flask.send_from_directory(
-            self._root_path,
-            key,
-            as_attachment=True,
-            download_name=os.path.basename(key),
+            self._root_path, key, as_attachment=True, **download_name
         )
 
     def get_upload_info(self, key):
