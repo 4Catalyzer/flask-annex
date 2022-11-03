@@ -58,9 +58,9 @@ setup(
     },
     cmdclass={
         "clean": system("rm -rf build dist *.egg-info"),
-        "package": system("python setup.py sdist bdist_wheel"),
+        "package": system("python3 setup.py sdist bdist_wheel"),
         "publish": system("twine upload dist/*"),
-        "release": system("python setup.py clean package publish"),
+        "release": system("python3 setup.py clean package publish"),
         "test": system("tox"),
     },
 )
