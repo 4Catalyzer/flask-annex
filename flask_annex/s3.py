@@ -10,6 +10,11 @@ DEFAULT_EXPIRES_IN = 300
 
 MISSING = object()
 
+
+def defined(obj):
+    return obj is not MISSING and obj is not None
+
+
 # -----------------------------------------------------------------------------
 
 
@@ -57,13 +62,17 @@ class S3Annex(AnnexBase):
             self._client.download_fileobj(self._bucket_name, key, out_file)
 
     def list_keys(self, prefix):
-        response = self._client.list_objects_v2(
-            Bucket=self._bucket_name,
-            Prefix=prefix,
+        paginator = self._client.get_paginator("list_objects_v2")
+        page_iterator = paginator.paginate(
+            Bucket=self._bucket_name, Prefix=prefix
         )
-        if "Contents" not in response:
-            return ()
-        return tuple(item["Key"] for item in response["Contents"])
+
+        return (
+            item["Key"]
+            for page in page_iterator
+            if "Contents" in page
+            for item in page["Contents"]
+        )
 
     def save_file(self, key, in_file):
         # Get the content type from the key, rather than letting Boto try to
@@ -91,21 +100,23 @@ class S3Annex(AnnexBase):
                 extra_args,
             )
 
-    def send_file(self, key):
-        url = self._client.generate_presigned_url(
+    def generate_presigned_url(self, key, content_disposition=None):
+        content_disposition = content_disposition or "attachment"
+        return self._client.generate_presigned_url(
             ClientMethod="get_object",
             Params={
                 "Bucket": self._bucket_name,
                 "Key": key,
-                # We don't need to specify filename explicitly; the basename
-                # of the key is in the URL and is appropriate here.
-                "ResponseContentDisposition": "attachment",
+                "ResponseContentDisposition": content_disposition,
             },
             ExpiresIn=self._expires_in,
         )
+
+    def send_file(self, key, content_disposition=None):
+        url = self.generate_presigned_url(key, content_disposition)
         return flask.redirect(url)
 
-    def get_upload_info(self, key):
+    def get_upload_info(self, key, max_content_length=MISSING):
         fields = {}
         conditions = []
 
@@ -113,10 +124,15 @@ class S3Annex(AnnexBase):
         if content_type:
             fields["Content-Type"] = content_type
 
-        if self._max_content_length is not MISSING:
+        if defined(max_content_length):
+            max_content_length = max_content_length
+        elif defined(self._max_content_length):
             max_content_length = self._max_content_length
-        else:
+        elif flask.current_app.config["MAX_CONTENT_LENGTH"] is not None:
             max_content_length = flask.current_app.config["MAX_CONTENT_LENGTH"]
+        else:
+            max_content_length = None
+
         if max_content_length is not None:
             conditions.append(
                 ("content-length-range", 0, max_content_length),
@@ -134,8 +150,13 @@ class S3Annex(AnnexBase):
             ExpiresIn=self._expires_in,
         )
 
+        url = post_info["url"]
+
+        # Coerce this to entries to ensure order remains as S3 expects.
+        post_data = tuple(post_info["fields"].items())
+
         return {
             "method": "POST",
-            "url": post_info["url"],
-            "post_data": tuple(post_info["fields"].items()),
+            "url": url,
+            "post_data": post_data,
         }
