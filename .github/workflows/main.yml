@@ -1,5 +1,3 @@
-# Adapted from https://github.com/python-attrs/attrs/blob/main/.github/workflows/main.yml
----
 name: CI
 
 on:
