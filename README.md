@@ -1,4 +1,4 @@
-# Flask-Annex [![Travis][build-badge]][build] [![PyPI][pypi-badge]][pypi]
+# Flask-Annex [![GitHub Actions][build-badge]][build] [![PyPI][pypi-badge]][pypi]
 
 Efficient integration of external storage services for [Flask](http://flask.pocoo.org/).
 
