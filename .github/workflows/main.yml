@@ -43,12 +43,12 @@ jobs:
           python-version: ${{ env.COVERAGE_PYTHON_VERSION }}
 
       - name: "Generate code coverage"
-        if: "contains(env.COVERAGE_PYTHON_VERSION, matrix.python-version)"
+        if: "${{ env.COVERAGE_PYTHON_VERSION == matrix.python-version }}"
         run: |
           set -xe
           python -m coverage xml
       - name: "Upload coverage"
-        if: "contains(env.COVERAGE_PYTHON_VERSION, matrix.python-version)"
+        if: "${{ env.COVERAGE_PYTHON_VERSION == matrix.python-version }}"
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         uses: "codecov/codecov-action@v4"
