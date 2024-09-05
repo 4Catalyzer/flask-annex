@@ -20,7 +20,7 @@ except ImportError:
 # -----------------------------------------------------------------------------
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def bucket_name():
     with mock_s3():
         bucket = boto3.resource("s3").Bucket("flask-annex")
