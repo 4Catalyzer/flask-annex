@@ -36,8 +36,7 @@ jobs:
       - name: "Run tox targets for ${{ matrix.python-version }}"
         run: "python -m tox"
 
-      # We always use a modern Python version for combining coverage to prevent
-      # parsing errors in older versions for modern code.
+      # use a modern Python version for code coverage
       - uses: "actions/setup-python@v5"
         with:
           python-version: ${{ env.COVERAGE_PYTHON_VERSION }}
