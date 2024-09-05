@@ -16,7 +16,6 @@ try:
     from moto import mock_aws
 except ImportError:
     pytestmark = pytest.mark.skipif(True, reason="S3 support not installed")
-    raise
 
 # -----------------------------------------------------------------------------
 
