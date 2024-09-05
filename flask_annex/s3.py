@@ -13,7 +13,7 @@ DEFAULT_EXPIRES_IN = 300
 MISSING = object()
 
 
-def defined(obj):
+def is_defined(obj):
     return obj is not MISSING and obj is not None
 
 
@@ -128,9 +128,9 @@ class S3Annex(AnnexBase):
         if content_type:
             fields["Content-Type"] = content_type
 
-        if defined(max_content_length):
+        if is_defined(max_content_length):
             max_content_length = max_content_length
-        elif defined(self._max_content_length):
+        elif is_defined(self._max_content_length):
             max_content_length = self._max_content_length
         elif flask.current_app.config["MAX_CONTENT_LENGTH"] is not None:
             max_content_length = flask.current_app.config["MAX_CONTENT_LENGTH"]
