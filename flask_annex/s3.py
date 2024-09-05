@@ -1,6 +1,8 @@
 import boto3
 import flask
 import mimetypes
+from botocore.config import Config
+from typing import Optional
 
 from .base import AnnexBase
 
@@ -28,12 +30,14 @@ class S3Annex(AnnexBase):
         secret_access_key=None,
         expires_in=DEFAULT_EXPIRES_IN,
         max_content_length=MISSING,
+        config: Optional[Config] = None,
     ):
         self._client = boto3.client(
             "s3",
             region,
             aws_access_key_id=access_key_id,
             aws_secret_access_key=secret_access_key,
+            config=config,
         )
 
         self._bucket_name = bucket_name
