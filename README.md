@@ -6,7 +6,7 @@ Run `pip install -e .[s3,tests]` to install for development and with `S3` suppor
 
 [![Codecov][codecov-badge]][codecov]
 
-[build-badge]: https://img.shields.io/travis/4Catalyzer/flask-annex/master.svg
+[build-badge]: https://github.com/4Catalyzer/flask-annex/actions/workflows/main.yml/badge.svg
 [build]: https://github.com/4Catalyzer/flask-annex/actions
 [pypi-badge]: https://img.shields.io/pypi/v/Flask-Annex.svg
 [pypi]: https://pypi.python.org/pypi/Flask-Annex
