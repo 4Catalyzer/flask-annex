@@ -2,7 +2,6 @@ import boto3
 import flask
 import mimetypes
 from botocore.config import Config
-from typing import Optional
 
 from .base import AnnexBase
 
@@ -30,7 +29,7 @@ class S3Annex(AnnexBase):
         secret_access_key=None,
         expires_in=DEFAULT_EXPIRES_IN,
         max_content_length=MISSING,
-        config: Optional[Config] = None,
+        config: Config | None = None,
     ):
         self._client = boto3.client(
             "s3",
