@@ -34,7 +34,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install --upgrade coverage[toml] tox tox-gh-actions
       - name: "Run tox targets for ${{ matrix.python-version }}"
-        run: "python -m tox"
+        run: tox
 
       # use a modern Python version for code coverage
       - uses: "actions/setup-python@v5"
