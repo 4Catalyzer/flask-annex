@@ -40,7 +40,19 @@ class AbstractTestAnnex:
         @app.route("/upload_info/<path:key>")
         def upload_info(key):
             try:
-                upload_info = annex.get_upload_info(key)
+                known_query_args = {
+                    "max_content_length": flask.request.args.get(
+                        "max_content_length", type=int
+                    )
+                }
+                upload_info = annex.get_upload_info(
+                    key,
+                    **{
+                        k: v
+                        for k, v in known_query_args.items()
+                        if k in flask.request.args
+                    },
+                )
             except NotImplementedError:
                 upload_info = {
                     "method": "PUT",
@@ -103,14 +115,14 @@ class AbstractTestAnnex:
         assert_key_value(annex, "foo/bar.txt", b"5\n")
 
     def test_delete(self, annex):
-        assert annex.list_keys("foo/bar.txt")
+        assert tuple(annex.list_keys("foo/bar.txt"))
         annex.delete("foo/bar.txt")
-        assert not annex.list_keys("foo/bar.txt")
+        assert not tuple(annex.list_keys("foo/bar.txt"))
 
     def test_delete_nonexistent(self, annex):
         annex.delete("@@nonexistent")
 
     def test_delete_many(self, annex):
-        assert annex.list_keys("")
+        assert tuple(annex.list_keys(""))
         annex.delete_many(("foo/bar.txt", "foo/baz.json", "foo/@@nonexistent"))
-        assert not annex.list_keys("")
+        assert not tuple(annex.list_keys(""))

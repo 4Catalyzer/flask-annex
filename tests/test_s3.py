@@ -13,6 +13,7 @@ from .helpers import AbstractTestAnnex, assert_key_value, get_upload_info
 try:
     import boto3
     import requests
+    from botocore.config import Config
     from moto import mock_aws
 except ImportError:
     pytestmark = pytest.mark.skipif(True, reason="S3 support not installed")
@@ -81,11 +82,14 @@ class TestS3Annex(AbstractTestAnnex):
         # FIXME: Workaround for spulec/moto#657.
         assert "application/json" in s3_response.headers["Content-Type"]
 
+    def assert_upload_info_url_method(self, upload_info):
+        assert upload_info["method"] == "POST"
+        assert upload_info["url"] == "https://flask-annex.s3.amazonaws.com/"
+
     def test_get_upload_info(self, client):
         upload_info = get_upload_info(client, "foo/qux.txt")
 
-        assert upload_info["method"] == "POST"
-        assert upload_info["url"] == "https://flask-annex.s3.amazonaws.com/"
+        self.assert_upload_info_url_method(upload_info)
         assert upload_info["post_data"][0] == ["Content-Type", "text/plain"]
         assert upload_info["post_data"][1] == ["key", "foo/qux.txt"]
         assert upload_info["post_data"][2] == ["AWSAccessKeyId", "FOOBARKEY"]
@@ -107,9 +111,22 @@ class TestS3Annex(AbstractTestAnnex):
         app.config["MAX_CONTENT_LENGTH"] = 100
 
         upload_info = get_upload_info(client, "foo/qux.txt")
+        self.assert_upload_info_url_method(upload_info)
 
         conditions = get_policy(upload_info)["conditions"]
         self.assert_app_config_content_length_range(conditions)
+
+    def test_get_upload_info_overridden_max_content_length(self, app, client):
+        upload_info = get_upload_info(
+            client, "foo/qux.txt", query_string={"max_content_length": 500}
+        )
+        self.assert_upload_info_url_method(upload_info)
+
+        conditions = get_policy(upload_info)["conditions"]
+        self.assert_overridden_content_length_range(conditions)
+
+    def assert_overridden_content_length_range(self, conditions):
+        assert get_condition(conditions, "content-length-range") == [0, 500]
 
     def assert_app_config_content_length_range(self, conditions):
         assert get_condition(conditions, "content-length-range") == [0, 100]
@@ -117,8 +134,7 @@ class TestS3Annex(AbstractTestAnnex):
     def test_get_upload_info_unknown_content_type(self, client):
         upload_info = get_upload_info(client, "foo/qux.@@nonexistent")
 
-        assert upload_info["method"] == "POST"
-        assert upload_info["url"] == "https://flask-annex.s3.amazonaws.com/"
+        self.assert_upload_info_url_method(upload_info)
 
         # filter for the "key" field; there should be only one instance
         key_items = list(
@@ -162,3 +178,18 @@ class TestS3AnnexMaxContentLength(TestS3Annex):
 
     def assert_app_config_content_length_range(self, conditions):
         assert get_condition(conditions, "content-length-range") == [0, 1000]
+
+
+class TestS3AnnexAdvancedConfig(TestS3Annex):
+    @pytest.fixture
+    def annex_base(self, bucket_name):
+        return Annex(
+            "s3", bucket_name, config=Config(use_dualstack_endpoint=True)
+        )
+
+    def assert_upload_info_url_method(self, upload_info):
+        assert upload_info["method"] == "POST"
+        assert (
+            upload_info["url"]
+            == "https://flask-annex.s3.dualstack.us-east-1.amazonaws.com/"
+        )
