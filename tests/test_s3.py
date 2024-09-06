@@ -13,16 +13,16 @@ from .helpers import AbstractTestAnnex, assert_key_value, get_upload_info
 try:
     import boto3
     import requests
-    from moto import mock_s3
+    from moto import mock_aws
 except ImportError:
     pytestmark = pytest.mark.skipif(True, reason="S3 support not installed")
 
 # -----------------------------------------------------------------------------
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def bucket_name():
-    with mock_s3():
+    with mock_aws():
         bucket = boto3.resource("s3").Bucket("flask-annex")
         bucket.create()
 
@@ -88,7 +88,7 @@ class TestS3Annex(AbstractTestAnnex):
         assert upload_info["url"] == "https://flask-annex.s3.amazonaws.com/"
         assert upload_info["post_data"][0] == ["Content-Type", "text/plain"]
         assert upload_info["post_data"][1] == ["key", "foo/qux.txt"]
-        assert upload_info["post_data"][2] == ["AWSAccessKeyId", "foobar_key"]
+        assert upload_info["post_data"][2] == ["AWSAccessKeyId", "FOOBARKEY"]
         assert upload_info["post_data"][3][0] == "policy"
         assert upload_info["post_data"][4][0] == "signature"
 
