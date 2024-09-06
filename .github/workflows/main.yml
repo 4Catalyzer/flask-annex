@@ -57,6 +57,7 @@ jobs:
   package:
     name: "Build, verify, and publish package"
     runs-on: "ubuntu-latest"
+    needs: [tests]
 
     steps:
       - uses: "actions/checkout@v4"
