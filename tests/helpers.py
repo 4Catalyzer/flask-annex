@@ -40,7 +40,19 @@ class AbstractTestAnnex:
         @app.route("/upload_info/<path:key>")
         def upload_info(key):
             try:
-                upload_info = annex.get_upload_info(key)
+                known_query_args = {
+                    "max_content_length": flask.request.args.get(
+                        "max_content_length", type=int
+                    )
+                }
+                upload_info = annex.get_upload_info(
+                    key,
+                    **{
+                        k: v
+                        for k, v in known_query_args.items()
+                        if k in flask.request.args
+                    },
+                )
             except NotImplementedError:
                 upload_info = {
                     "method": "PUT",

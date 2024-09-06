@@ -116,6 +116,18 @@ class TestS3Annex(AbstractTestAnnex):
         conditions = get_policy(upload_info)["conditions"]
         self.assert_app_config_content_length_range(conditions)
 
+    def test_get_upload_info_overridden_max_content_length(self, app, client):
+        upload_info = get_upload_info(
+            client, "foo/qux.txt", query_string={"max_content_length": 500}
+        )
+        self.assert_upload_info_url_method(upload_info)
+
+        conditions = get_policy(upload_info)["conditions"]
+        self.assert_overridden_content_length_range(conditions)
+
+    def assert_overridden_content_length_range(self, conditions):
+        assert get_condition(conditions, "content-length-range") == [0, 500]
+
     def assert_app_config_content_length_range(self, conditions):
         assert get_condition(conditions, "content-length-range") == [0, 100]
 
