@@ -77,7 +77,8 @@ class AbstractTestAnnex:
     def test_get_filename(self, tmpdir, annex):
         out_filename = tmpdir.join("out").strpath
         annex.get_file("foo/bar.txt", out_filename)
-        assert open(out_filename).read() == "1\n"
+        with open(out_filename) as f:
+            assert f.read() == "1\n"
 
     def test_list_keys(self, annex):
         annex.save_file("foo/qux.txt", BytesIO(b"3\n"))
